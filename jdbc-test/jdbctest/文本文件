@@ -1,0 +1,96 @@
+/*
+	jdbc编程6步
+*/
+import java.sql.*;
+public class JDBCTest{
+	public static void main(String[] args){
+		Connection conn=null;
+		Statement stmt =null;
+		ResultSet rs=null;
+		try{
+			//1.注册驱动
+			DriverManager.registerDriver(new com.mysql.jdbc.Driver());//接口不能直接new driver,需要一个已经实现的driver
+			
+			//注册驱动的另一种方式（常用）参数是字符串，可以写到配置文件中
+			class.forName("com.mysql.jdbc.Driver()");//反射机制进行类加载，源码中加载写在静态代码块中
+			
+			//2.获取连接
+			String url="jdbc:mysql://127.0.0.1:3306/learningtest";
+			String user="root";
+			String password="";
+			conn=DriverManager.getConnection(url,user,password);
+			//3.获取数据库操作对象(Statement专门执行sql语句)
+			stmt=conn.createStatement();
+			//4.执行sql(jdbc sql语句不用写分号)
+			String sql="insert into dept(deptno,dname,loc) values('50','人事部','beijing')";
+			//专门执行dml语句（insert，delete，update）
+			//返回值是：影响数据库中记录的条数
+			int count=stmt.executeUpdate(sql);
+			//select 语句用 DQL语句
+			String sql1="select * from EMP";
+			rs=stmt.executeQuery(sql1);
+			//rs对象拿到除了表头之外的表格
+			
+			
+			//5.处理查询结果集
+			/*
+			指针最初指向得到的表格的第一行的前面，调用rs.next()指针会向下指一行
+			*/
+			boolean flag1=rs.next();//是个boolean类型
+			while(rs.next()){
+				//光标指向的行有数据
+				//取数据
+				//getString()不管数据库中数据类型是什么，都以String的形式取出,参数代表列的下标
+				String empno=rs.getString("empno");//jdbc中所有下标从1开始,也可以用列名（最终select出来的列名，select可以对列重命名）
+				String ename=rs.getString(2);
+				String sal=rs.getString(3);
+				
+				sout(empno+ename+sal);
+				
+				//可以取其他类型
+				int empno=rs.getInt(1);
+				Double sal=rs.getDouble(3);
+				
+			}
+			
+			
+		}catch(SQLException e){
+			e.printStackTrace();
+		}catch(ClassNotFoundException e){
+			e.printStackTrace();
+		}finally{
+			//为了保证资源一定释放，在finally中释放资源
+			//6.释放资源
+			//遵循从小到大，依次关闭分别trycatch
+			try{
+            	if(rs !=null){
+            		rs.close();
+            	}
+            }
+            }catch(SQLException e){
+            	e.printStackTrace();
+            }
+			try{
+				if(stmt !=null){
+					stmt.close();
+				}
+			}
+			}catch(SQLException e){
+				e.printStackTrace();
+			}
+			try{
+				if(conn !=null){
+					conn.close();
+				}
+			}
+			}catch(SQLException e){
+				e.printStackTrace();
+			}
+
+			
+		}
+	
+		
+	}
+
+}
