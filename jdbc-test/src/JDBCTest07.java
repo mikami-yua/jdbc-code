@@ -9,7 +9,7 @@ import java.sql.SQLException;
  *      在实际业务中通常是n条DML语句共同联合才能完成，必须保证他们要么同时成功要么同时失败
  *
  *      以下验证JDBC的事物提交机制
- *          测试结果JDBC中执行任意一条DML语句就提交一次
+ *          测试结果JDBC中执行任意一条DML语句就提交一次`
  */
 public class JDBCTest07 {
     public static void main(String[] args) {
